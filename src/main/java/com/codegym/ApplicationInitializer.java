@@ -1,7 +1,10 @@
 package com.codegym;
 
 import com.codegym.ApplicationConfig;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+import javax.servlet.Filter;
 
 public class ApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
     @Override
@@ -18,4 +21,10 @@ public class ApplicationInitializer extends AbstractAnnotationConfigDispatcherSe
     protected String[] getServletMappings() {
         return new String[]{"/"};
     }
-}
+
+    @Override
+    protected Filter[] getServletFilters() {
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("UTF-8");
+        return new Filter[] { characterEncodingFilter};
+    }}

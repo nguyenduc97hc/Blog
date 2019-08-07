@@ -6,9 +6,9 @@
 </head>
 <body>
 <p>
-    <a href="/list">Blog List</a>
+    <a href="/blog/list">Blog List</a>
 </p>
-<form th:action="@{/delete}" th:object="${blog}" method="post">
+<form th:action="@{/blog/delete}" th:object="${blog}" method="post">
     <input type="hidden" th:field="*{id}">
     <table>
         <tr>

@@ -6,9 +6,9 @@
 </head>
 <body>
 <p>
-    <a href="/list">Blog List</a>
+    <a href="/blog/list">Blog List</a>
 </p>
-<form th:action="@{/edit}" th:object="${blog}" method="post">
+<form th:action="@{/blog/edit}" th:object="${blog}" method="post">
     <input type="hidden" th:field="*{id}">
     <table>
         <tr>
@@ -24,6 +24,11 @@
             <td><input type="submit" value="Edit customer"></td>
         </tr>
     </table>
+    <td>
+        <select th:field="*{category}">
+            <option th:each="p : ${categorys}" th:value="${p.id}" th:text="${p.name}"></option>
+        </select>
+    </td>
 </form>
 </body>
 </html>

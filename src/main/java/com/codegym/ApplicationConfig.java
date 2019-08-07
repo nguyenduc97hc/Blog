@@ -1,10 +1,13 @@
 package com.codegym;
 
-import com.codegym.repository.Blog.BlogRepositoryImpl;
-
-import com.codegym.repository.BlogRepository;
 import com.codegym.service.BlogService;
-import com.codegym.service.BlogServiceImpl;
+import com.codegym.service.CategoryService;
+import com.codegym.service.BlogService;
+import com.codegym.service.Impl.BlogServiceImpl;
+import com.codegym.service.Impl.CategoryServiceImpl;
+import com.codegym.service.Impl.BlogServiceImpl;
+import com.codegym.service.Impl.CategoryServiceImpl;
+import com.codegym.service.CategoryService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -12,6 +15,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -36,25 +42,30 @@ import java.util.Properties;
 @EnableWebMvc
 @EnableTransactionManagement
 @ComponentScan("com.codegym")
+@EnableJpaRepositories("com.codegym.repository")
+@EnableSpringDataWebSupport
 public class ApplicationConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addFormatter(new CategoryFormatter(applicationContext.getBean(CategoryService.class)));
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
-    @Bean
-    public BlogRepository blogRepository(){
-        return new BlogRepositoryImpl();
-    }
 
     @Bean
-    public BlogService blogService(){
+    public BlogService customerService(){
         return new BlogServiceImpl();
     }
 
+    @Bean
+    public CategoryService provinceService(){return  new CategoryServiceImpl();
+    }
 
     //Thymeleaf Configuration
     @Bean
@@ -63,6 +74,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter implements Applic
         templateResolver.setApplicationContext(applicationContext);
         templateResolver.setPrefix("/WEB-INF/views");
         templateResolver.setSuffix(".html");
+        templateResolver.setCharacterEncoding("UTF-8");
         templateResolver.setTemplateMode(TemplateMode.HTML);
         return templateResolver;
     }
@@ -78,6 +90,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter implements Applic
     public ThymeleafViewResolver viewResolver(){
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setTemplateEngine(templateEngine());
+        viewResolver.setCharacterEncoding("UTF-8");
         return viewResolver;
     }
 
@@ -104,7 +117,7 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter implements Applic
     public DataSource dataSource(){
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/blog");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/blog?useUnicode=yes&characterEncoding=utf-8");
         dataSource.setUsername( "root" );
         dataSource.setPassword( "123456" );
         return dataSource;
@@ -125,3 +138,4 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter implements Applic
     }
 
 }
+

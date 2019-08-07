@@ -5,8 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-<a href="/create">Create new Blog</a>
+<a href="/blog/create">Create new Blog</a>
 <h1>Blog</h1>
+<form th:action="@{/blog/search}" method="get">
+    <input type="text" id="name" name="title">
+    <input type="submit" value="Search">
+</form>
 <table border="1">
     <tr>
         <th>Title</th>
@@ -16,10 +20,19 @@
         <tr>
             <td th:text="${blog.title}"></td>
             <td th:text="${blog.content}"></td>
-            <td><a th:href="@{/edit/__${blog.id}__}">Edit</a></td>
-            <td><a th:href="@{/delete/__${blog.id}__}">Delete</a></td>
+            <td th:text="${blog.category.name}"></td>
+            <td><a th:href="@{/blog/edit/__${blog.id}__}">Edit</a></td>
+            <td><a th:href="@{/blog/delete/__${blog.id}__}">Delete</a></td>
         </tr>
     </th:block>
 </table>
+<div>
+    <a th:href="@{'/blog'(page=${blogList.number - 1})}" th:if="${blogList.hasPrevious()}">Previous</a>
+    <span th:text="${blogList.number + 1}"></span>/<span th:text="${blogList.totalPages}"></span>
+    <a th:href="@{'/customers'(page=${blogList.number + 1})}" th:if="${blogList.hasNext()}">Next</a>
+</div>
+<p>
+    <a href="/category/list">Category</a>
+</p>
 </body>
 </html>

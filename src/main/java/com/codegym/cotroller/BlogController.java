@@ -1,28 +1,45 @@
 package com.codegym.cotroller;
 
 import com.codegym.model.Blog;
+import com.codegym.model.Category;
 import com.codegym.service.BlogService;
+import com.codegym.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/blog")
 public class BlogController {
 
     @Autowired
     private BlogService blogService;
+    @Autowired
+    private CategoryService categoryService;
+    @ModelAttribute("categorys")
+    public Page<Category> provinceList(Pageable pageable){
+        return categoryService.findAll(pageable);
+    }
 
     @GetMapping("/list")
-    public ModelAndView listBlog(){
-        List<Blog> blogs = blogService.findAll();
+    public ModelAndView listBlog(Pageable pageable){
+        Page<Blog> blogs = blogService.findAll(pageable);
         ModelAndView modelAndView = new ModelAndView("/blog/list");
         modelAndView.addObject("blogList",blogs);
+        return modelAndView;
+    }
+    @GetMapping("/search")
+    public ModelAndView searchBlog(@RequestParam("title") String title,Pageable pageable){
+        Page<Blog> blogs = blogService.findAllByTitleContaining(title,pageable);
+        ModelAndView modelAndView = new ModelAndView("/blog/search");
+        modelAndView.addObject("blogList", blogs);
         return modelAndView;
     }
     @GetMapping("/create")
@@ -60,9 +77,9 @@ public class BlogController {
         return modelAndView;
     }
     @PostMapping("/delete")
-    public ModelAndView removeCustomer(@ModelAttribute Blog blog){
+    public String removeCustomer(@ModelAttribute Blog blog){
         blogService.delete(blog.getId());
-        ModelAndView modelAndView = new ModelAndView("/blog/delete");
-        return modelAndView;
+
+        return "redirect:list";
     }
 }
